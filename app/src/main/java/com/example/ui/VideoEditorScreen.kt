@@ -84,6 +84,7 @@ fun VideoEditorScreen(
         val iconOpacity: Float,
         val fontSize: Float,
         val transFontSize: Float,
+        val surahNameFontSize: Float,
         val textColor: String
     )
     val undoStack = remember { mutableStateListOf<EditorState>() }
@@ -116,6 +117,7 @@ fun VideoEditorScreen(
 
     var fontSize by remember { mutableFloatStateOf(20f) }
     var translationFontSize by remember { mutableFloatStateOf(8f) }
+    var surahNameFontSize by remember { mutableFloatStateOf(44f) }
     var textColor by remember { mutableStateOf("#FFFFFF") }
 
     var quranFontFamily by remember { mutableStateOf("Default") }
@@ -160,6 +162,7 @@ fun VideoEditorScreen(
         iconOpacity = settingsManager.iconOpacity.first()
         fontSize = settingsManager.fontSize.first().toFloat()
         translationFontSize = settingsManager.translationFontSize.first().toFloat()
+        surahNameFontSize = settingsManager.surahNameFontSize.first().toFloat()
         textColor = settingsManager.textColor.first()
         quranFontFamily = settingsManager.fontFamily.first()
         surahNameFontFamily = settingsManager.surahNameFontFamily.first()
@@ -310,7 +313,7 @@ fun VideoEditorScreen(
     }
 
     fun captureState(): EditorState {
-        return EditorState(arabicTextX, arabicTextY, translationTextX, translationTextY, surahNameX, surahNameY, iconX, iconY, iconSize, iconOpacity, fontSize, translationFontSize, textColor)
+        return EditorState(arabicTextX, arabicTextY, translationTextX, translationTextY, surahNameX, surahNameY, iconX, iconY, iconSize, iconOpacity, fontSize, translationFontSize, surahNameFontSize, textColor)
     }
 
     fun restoreState(state: EditorState) {
@@ -326,6 +329,7 @@ fun VideoEditorScreen(
         iconOpacity = state.iconOpacity
         fontSize = state.fontSize
         translationFontSize = state.transFontSize
+        surahNameFontSize = state.surahNameFontSize
         textColor = state.textColor
     }
 
@@ -526,7 +530,7 @@ fun VideoEditorScreen(
             // Surah Name Handle
             Box(
                 modifier = Modifier
-                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), (surahNameY * scalePx).roundToInt()) }
+                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 40f) * scalePx).roundToInt()) }
                     .align(Alignment.TopCenter)
                     .padding(top = 90.dp)
                     .pointerInput(Unit) {
@@ -552,7 +556,7 @@ fun VideoEditorScreen(
                     text = currentSurah,
                     fontFamily = currentSurahFont,
                     color = sColor.copy(alpha = surahNameOpacity),
-                    fontSize = spFromCanvas(24f),
+                    fontSize = spFromCanvas(surahNameFontSize),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -1171,6 +1175,18 @@ fun VideoEditorScreen(
                                         }
                                 )
                             }
+                        }
+                    
+                    } else if (selectedElement == "surah") {
+                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Text(if (isArabic) "الحجم" else "Size", color = Color.White, fontSize = 12.sp)
+                            Slider(
+                                value = surahNameFontSize,
+                                onValueChange = { surahNameFontSize = it },
+                                valueRange = 10f..150f,
+                                modifier = Modifier.width(120.dp),
+                                colors = SliderDefaults.colors(thumbColor = LuxuryGold, activeTrackColor = LuxuryGold)
+                            )
                         }
                     } else if (selectedElement == "translation") {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {

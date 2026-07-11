@@ -2482,8 +2482,8 @@ class VideoGenerator {
                     this.textAlign = Paint.Align.CENTER
                     setShadowLayer(6f, 0f, 3f, Color.argb(150, 0, 0, 0))
                 }
-                val heartY = videoHeight / 2f + ((iconY.toFloat() + 45f) * 2f) - iconPaint.descent()
-                canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat() * 2f), heartY, iconPaint)
+                val heartY = videoHeight / 2f + (iconY.toFloat() + 45f) - iconPaint.descent()
+                canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat()), heartY, iconPaint)
             }
         }
     }

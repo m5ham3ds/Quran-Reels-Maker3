@@ -2644,7 +2644,7 @@ fun LivePreviewContainer(
                         Text(
                             text = text,
                             fontFamily = quranFontFamily,
-                            fontSize = (fontSize * scale * 2.3f / fontScale).sp, // Scaled for preview fits
+                            fontSize = (fontSize * scale / fontScale).sp, // Scaled for preview fits
                             fontWeight = FontWeight.Bold,
                             color = quranTextColor,
                             textAlign = when (textAlignStr) {
@@ -2652,7 +2652,7 @@ fun LivePreviewContainer(
                                 "Right" -> TextAlign.Right
                                 else -> TextAlign.Center
                             },
-                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale * 2f).dp, y = (arabicTextY * scale * 2f - 90f * scale * 2f).dp)
+                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale).dp, y = ((arabicTextY - 90f) * scale).dp)
                         )
                     }
 
@@ -2676,7 +2676,7 @@ fun LivePreviewContainer(
                             Text(
                                 text = text,
                                 fontFamily = transFontFamily,
-                                fontSize = (translationFontSize * scale * 2.1f / fontScale).sp,
+                                fontSize = (translationFontSize * scale / fontScale).sp,
                                 fontWeight = FontWeight.Medium,
                                 color = finalTransColor,
                                 textAlign = when (textAlignStr) {
@@ -2684,7 +2684,7 @@ fun LivePreviewContainer(
                                     "Right" -> TextAlign.Right
                                     else -> TextAlign.Center
                                 },
-                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale * 2f).dp, y = (translationTextY * scale * 2f - 115f * scale * 2f).dp)
+                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale).dp, y = ((translationTextY - 115f) * scale).dp)
                             )
                         }
                     }
@@ -2710,12 +2710,12 @@ fun LivePreviewContainer(
         Text(
             text = "سُورَةُ الْكَوْثَرِ",
             fontFamily = finalSurahFontFamily,
-            fontSize = (surahNameFontSize * scale * 1.6f / fontScale).sp,
+            fontSize = (surahNameFontSize * scale / fontScale).sp,
             color = sColor.copy(alpha = surahNameOpacity),
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 20.dp)
-                .offset(x = (surahNameX * scale * 2f).dp, y = (surahNameY * scale * 2f).dp)
+                .offset(x = (surahNameX * scale).dp, y = ((surahNameY + 40f) * scale).dp)
         )
 
         // Qibla Icon
@@ -2725,44 +2725,10 @@ fun LivePreviewContainer(
             tint = Color.White.copy(alpha = iconOpacity),
             modifier = Modifier
                 .align(Alignment.Center)
-                .size((iconSize * scale * 1.6f).dp)
-                .offset(x = (iconX * scale * 2f).dp, y = (iconY * scale * 2f + 45f * scale * 2f).dp)
+                .size((iconSize * scale).dp)
+                .offset(x = (iconX * scale).dp, y = ((iconY + 45f) * scale).dp)
         )
 
-        // Realistic Reel Social Overlay
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(18.dp),
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 12.dp, bottom = 40.dp)
-        ) {
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                IconButton(onClick = {}) {
-                    Icon(Icons.Filled.Favorite, contentDescription = null, tint = Color(0xFFE91E63), modifier = Modifier.size(26.dp))
-                }
-                Text("1.2K", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-            
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                IconButton(onClick = {}) {
-                    Icon(Icons.Filled.Home, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
-                }
-                Text("48", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
-            }
-            
-            IconButton(onClick = {}) {
-                Icon(Icons.Filled.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
-            }
-            
-            // Spinning disk silhouette
-            Box(
-                modifier = Modifier
-                    .size(28.dp)
-                    .border(2.dp, Color.White.copy(alpha = 0.5f), CircleShape)
-                    .background(Color.Black, CircleShape)
-            )
-        }
 
         // Live Preview Eyes banner (floating footer indicator)
         Row(
