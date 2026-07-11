@@ -2489,6 +2489,8 @@ fun FontFormattingScreen(settingsManager: SettingsManager, isArabic: Boolean) {
                 iconX = iconX,
                 iconY = iconY,
                 textAnimation = textAnimation,
+                bgTransitionEnabled = bgTransitionEnabled,
+                bgTransitionType = bgTransitionType,
                 isArabic = isArabic,
                 triggerRecomposition = triggerRecomposition
             )
@@ -2528,6 +2530,8 @@ fun LivePreviewContainer(
     iconX: Int,
     iconY: Int,
     textAnimation: String,
+    bgTransitionEnabled: Boolean,
+    bgTransitionType: String,
     isArabic: Boolean,
     triggerRecomposition: Int = 0
 ) {
@@ -2595,6 +2599,50 @@ fun LivePreviewContainer(
         modifier = Modifier.fillMaxWidth().height(520.dp),
         contentAlignment = Alignment.Center
     ) {
+    var lastSentenceChangeTime by remember { mutableStateOf(0L) }
+    var currentSentenceIndex by remember { mutableStateOf(0) }
+    if (sentenceIndex != currentSentenceIndex) {
+        currentSentenceIndex = sentenceIndex
+        lastSentenceChangeTime = System.currentTimeMillis()
+    }
+    
+    val timeSinceChange = System.currentTimeMillis() - lastSentenceChangeTime
+    var bgAlphaOverlay = 0f
+    var bgWhiteOverlay = 0f
+    
+    if (bgTransitionEnabled && timeSinceChange < 500L && isPlaying) {
+        val progress = timeSinceChange.toFloat() / 500f
+        when (bgTransitionType.lowercase()) {
+            "black" -> {
+                bgAlphaOverlay = if (progress < 0.5f) {
+                    (progress * 2f).coerceIn(0f, 1f)
+                } else {
+                    (1f - (progress - 0.5f) * 2f).coerceIn(0f, 1f)
+                }
+            }
+            "blink" -> {
+                if (progress < 0.15f) bgWhiteOverlay = 1f
+            }
+            "dissolve" -> {
+                bgAlphaOverlay = if (progress < 0.5f) {
+                    (progress * 2f).coerceIn(0f, 1f) * 0.7f
+                } else {
+                    (1f - (progress - 0.5f) * 2f).coerceIn(0f, 1f) * 0.7f
+                }
+            }
+            "vertical" -> {
+                bgAlphaOverlay = (1f - progress) * 0.5f
+            }
+        }
+    }
+    // trigger recomposition for animation
+    LaunchedEffect(timeSinceChange, isPlaying) {
+        if (isPlaying && timeSinceChange < 500L) {
+            kotlinx.coroutines.delay(16)
+            lastSentenceChangeTime = lastSentenceChangeTime // trigger recomposition
+        }
+    }
+
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxHeight()
@@ -2605,6 +2653,14 @@ fun LivePreviewContainer(
                     colors = listOf(Color(0xFF070A14), Color(0xFF140D07))
                 )
             )
+            .drawBehind {
+                if (bgAlphaOverlay > 0f) {
+                    drawRect(Color.Black.copy(alpha = bgAlphaOverlay))
+                }
+                if (bgWhiteOverlay > 0f) {
+                    drawRect(Color.White.copy(alpha = bgWhiteOverlay))
+                }
+            }
             .border(2.dp, BorderColor, RoundedCornerShape(24.dp))
     ) {
         val scale = maxWidth.value / 720f
@@ -2680,7 +2736,7 @@ fun LivePreviewContainer(
                                 "Right" -> TextAlign.Right
                                 else -> TextAlign.Center
                             },
-                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale).dp, y = ((arabicTextY - 160f) * scale).dp)
+                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale).dp, y = (((arabicTextY - 70f)) * scale).dp)
                         )
                     }
 
@@ -2712,7 +2768,7 @@ fun LivePreviewContainer(
                                     "Right" -> TextAlign.Right
                                     else -> TextAlign.Center
                                 },
-                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale).dp, y = ((translationTextY - 225f) * scale).dp)
+                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale).dp, y = (((translationTextY - 110f)) * scale).dp)
                             )
                         }
                     }
@@ -2743,7 +2799,7 @@ fun LivePreviewContainer(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .padding(top = 20.dp)
-                .offset(x = (surahNameX * scale).dp, y = ((surahNameY + 40f) * scale).dp)
+                .offset(x = (surahNameX * scale).dp, y = ((surahNameY - 70f) * scale).dp)
         )
 
         // Qibla Icon
@@ -2754,7 +2810,7 @@ fun LivePreviewContainer(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size((iconSize * scale).dp)
-                .offset(x = (iconX * scale).dp, y = ((iconY + 95f) * scale).dp)
+                .offset(x = (iconX * scale).dp, y = ((iconY + 50f) * scale).dp)
         )
 
 

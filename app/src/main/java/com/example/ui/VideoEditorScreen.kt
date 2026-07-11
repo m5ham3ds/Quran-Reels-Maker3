@@ -584,7 +584,7 @@ fun VideoEditorScreen(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 110f) * scalePx).roundToInt()) }
+                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY - 70f) * scalePx).roundToInt()) }
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = {
@@ -618,7 +618,7 @@ fun VideoEditorScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 95f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 50f) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -680,7 +680,7 @@ fun VideoEditorScreen(
                 // Arabic Text Handle
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((arabicTextX * scalePx).roundToInt(), ((arabicTextY - 160f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((arabicTextX * scalePx).roundToInt(), (((arabicTextY - 70f)) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -714,7 +714,7 @@ fun VideoEditorScreen(
                 if (showTranslation) {
                     Box(
                         modifier = Modifier
-                            .offset { IntOffset((translationTextX * scalePx).roundToInt(), ((translationTextY - 225f) * scalePx).roundToInt()) }
+                            .offset { IntOffset((translationTextX * scalePx).roundToInt(), (((translationTextY - 110f)) * scalePx).roundToInt()) }
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = {

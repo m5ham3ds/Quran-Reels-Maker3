@@ -1184,6 +1184,8 @@ class VideoGenerator {
             
             var previousVideoLastFrame: Bitmap? = null
             var currentBgFrameForTransition: Bitmap? = null
+            var frameDecoder: SequentialFrameDecoder? = null
+            var lastVideoIdx = -1
             
             val reusableVerseBitmap = Bitmap.createBitmap(vidWidth, vidHeight, Bitmap.Config.ARGB_8888)
             val reusableCanvas = Canvas(reusableVerseBitmap)
@@ -1192,8 +1194,6 @@ class VideoGenerator {
             for ((idx, verse) in verses.withIndex()) {
                 reportProgress(if (isArabic) "جاري تصوير مشهدي الآية ${startAyah + idx}..." else "Rendering scenes for Ayah ${startAyah + idx}...", 0.5f + (idx * 0.4f / verses.size))
                 
-                var frameDecoder: SequentialFrameDecoder? = null
-                var lastVideoIdx = -1
                 
                 val framesNeeded = Math.round(verse.durationUs.toDouble() / frameDurationUs.toDouble()).toInt().coerceAtLeast(1)
                 val verseStartPts = verseStartTimestampsUs[idx]
@@ -1217,7 +1217,7 @@ class VideoGenerator {
                     val chunkIdx = if (activeChunk != null) verse.chunks.indexOf(activeChunk).coerceAtLeast(0) else 0
                     
                     // Use a unique background for every chunk across all verses
-                    val globalChunkOffset = verses.take(idx).sumOf { it.chunks.size }
+                    val globalChunkOffset = verses.take(idx).sumOf { it.chunks.size.coerceAtLeast(1) }
                     val videoIdx = globalChunkOffset + chunkIdx
                     
                     if (videoIdx != lastVideoIdx) {
@@ -1341,6 +1341,7 @@ class VideoGenerator {
             val totalReelDurationUs = verseStartTimestampsUs.last() + Math.round(verses.last().durationUs.toDouble() / frameDurationUs.toDouble()).toInt().coerceAtLeast(1) * frameDurationUs
             encoder.queueInputBuffer(eosIdx, 0, 0, totalReelDurationUs, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
             
+            frameDecoder?.release()
             previousVideoLastFrame?.recycle()
             currentBgFrameForTransition?.recycle()
             reusableVerseBitmap.recycle()
@@ -2425,7 +2426,7 @@ class VideoGenerator {
             "Bottom" -> videoHeight.toFloat() - totalHeight - 100f
             else -> (videoHeight.toFloat() - totalHeight) / 2f + 150f
         }
-        val startY = baseStartY + ((arabicTextY.toFloat() - 160f))
+        val startY = baseStartY + ((arabicTextY.toFloat() - 70f))
         
         canvas.save()
         if (animScale != 1f || animTranslateY != 0f || animTranslateX != 0f) {
@@ -2469,7 +2470,7 @@ class VideoGenerator {
             // 6. Draw translation
             if (transSl != null) {
                 canvas.save()
-                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 225f))
+                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 110f))
                 canvas.translate((horizontalPadding / 2f) + (translationTextX.toFloat()), transY)
                 transSl.draw(canvas)
                 canvas.restore()
@@ -2490,7 +2491,7 @@ class VideoGenerator {
                     this.textAlign = Paint.Align.CENTER
                     setShadowLayer(6f, 0f, 3f, Color.argb(150, 0, 0, 0))
                 }
-                val heartY = videoHeight / 2f + (iconY.toFloat() + 95f) - iconPaint.descent()
+                val heartY = videoHeight / 2f + (iconY.toFloat() + 50f + 95f) - iconPaint.descent()
                 canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat()), heartY, iconPaint)
             }
         }
