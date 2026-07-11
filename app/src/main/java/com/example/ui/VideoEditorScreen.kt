@@ -537,9 +537,8 @@ fun VideoEditorScreen(
             // Surah Name Handle
             Box(
                 modifier = Modifier
-                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 40f) * scalePx).roundToInt()) }
                     .align(Alignment.TopCenter)
-                    .padding(top = 90.dp)
+                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 180f) * scalePx).roundToInt()) }
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = {
@@ -572,8 +571,8 @@ fun VideoEditorScreen(
             if (iconOpacity > 0f || selectedElement == "icon") {
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 45f) * scalePx).roundToInt()) }
                         .align(Alignment.Center)
+                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 45f) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -612,24 +611,25 @@ fun VideoEditorScreen(
                         "Bottom" -> IntOffset(0, (-100f * scalePx).roundToInt())
                         else -> IntOffset(0, (150f * scalePx).roundToInt())
                     }
-                }.then(
+                }.fillMaxWidth(0.9f).drawBehind {
                     if (showTextBackground) {
-                        Modifier
-                            .background(
-                                color = tBgColor.copy(alpha = textBgOpacity),
-                                shape = RoundedCornerShape(textBgRadius.dp)
-                            )
-                            .padding(horizontal = 20.dp, vertical = 24.dp)
-                    } else {
-                        Modifier
+                        val finalBgColor = tBgColor.copy(alpha = textBgOpacity)
+                        val padTop = 42f * canvasScale
+                        val padBottom = 42f * canvasScale
+                        drawRoundRect(
+                            color = finalBgColor,
+                            topLeft = androidx.compose.ui.geometry.Offset(0f, -padTop),
+                            size = androidx.compose.ui.geometry.Size(size.width, size.height + padTop + padBottom),
+                            cornerRadius = androidx.compose.ui.geometry.CornerRadius(textBgRadius.dp.toPx())
+                        )
                     }
-                ),
+                },
                 horizontalAlignment = when (textAlignStr) {
                     "Left" -> Alignment.Start
                     "Right" -> Alignment.End
                     else -> Alignment.CenterHorizontally
                 },
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(dpFromCanvas(32f))
             ) {
                 // Arabic Text Handle
                 Box(

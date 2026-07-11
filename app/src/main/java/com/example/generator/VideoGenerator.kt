@@ -2308,7 +2308,7 @@ class VideoGenerator {
         }
         // Apply Surah Name X/Y offsets, scaled
         val snX = videoWidth / 2f + (surahNameX.toFloat())
-        val surahTopY = 40f + (surahNameY.toFloat())
+        val surahTopY = 180f + (surahNameY.toFloat())
         val snY = surahTopY - surahPaint.ascent()
         if (!isPreviewMode) {
             canvas.drawText(surahName, snX, snY, surahPaint)

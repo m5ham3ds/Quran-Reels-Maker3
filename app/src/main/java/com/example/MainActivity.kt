@@ -1,5 +1,6 @@
 package com.example
 
+import androidx.compose.ui.draw.drawBehind
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -2588,6 +2589,7 @@ fun LivePreviewContainer(
             .border(2.dp, BorderColor, RoundedCornerShape(24.dp))
     ) {
         val scale = maxWidth.value / 720f
+        val density = androidx.compose.ui.platform.LocalDensity.current.density
         val fontScale = androidx.compose.ui.platform.LocalDensity.current.fontScale
         
         // Star sparkle circles inside preview
@@ -2599,7 +2601,7 @@ fun LivePreviewContainer(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(horizontal = 24.dp, vertical = 50.dp),
+                .padding(vertical = 50.dp),
             contentAlignment = when (textPosition) {
                 "Top" -> Alignment.TopCenter
                 "Bottom" -> Alignment.BottomCenter
@@ -2613,18 +2615,21 @@ fun LivePreviewContainer(
                         "Right" -> Alignment.End
                         else -> Alignment.CenterHorizontally
                     },
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = (if (showTextBg) {
-                        val bgColor = try { Color(android.graphics.Color.parseColor(textBgColorStr)) } catch (e: Exception) { Color.Black }
-                        Modifier
-                            .background(
-                                color = bgColor.copy(alpha = textBgOpacity),
-                                shape = RoundedCornerShape(textBgRadius.dp)
+                    verticalArrangement = Arrangement.spacedBy((32f * scale).dp),
+                    modifier = Modifier.fillMaxWidth(0.9f).drawBehind {
+                        if (showTextBg) {
+                            val bgColor = try { Color(android.graphics.Color.parseColor(textBgColorStr)) } catch (e: Exception) { Color.Black }
+                            val finalBgColor = bgColor.copy(alpha = textBgOpacity)
+                            val padTop = 42f * scale * density
+                            val padBottom = 42f * scale * density
+                            drawRoundRect(
+                                color = finalBgColor,
+                                topLeft = androidx.compose.ui.geometry.Offset(0f, -padTop),
+                                size = androidx.compose.ui.geometry.Size(size.width, size.height + padTop + padBottom),
+                                cornerRadius = androidx.compose.ui.geometry.CornerRadius(textBgRadius.dp.toPx())
                             )
-                            .padding(horizontal = 20.dp, vertical = 24.dp)
-                    } else {
-                        Modifier
-                    }).then(if (textPosition == "Center" || textPosition == "Middle") Modifier.offset(y = (150f * scale).dp) else Modifier)
+                        }
+                    }.then(if (textPosition == "Center" || textPosition == "Middle") Modifier.offset(y = (150f * scale).dp) else Modifier)
                 ) {
                     // Quran Arabic Head
                     val rawCol = try { Color(android.graphics.Color.parseColor(textColorStr)) } catch (e: Exception) { Color.White }
