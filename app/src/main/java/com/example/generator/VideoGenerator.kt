@@ -1032,16 +1032,9 @@ class VideoGenerator {
                 throw Exception("فشل تهيئة قارئ الصوت للملف: ${verses[0].audioPath}. ${e.message}")
             }
             
-            val videoResString = settingsManager.videoResolution.first()
             var vidWidth = 720
             var vidHeight = 1280
-            var vidBitrate = 2000000
-            when (videoResString) {
-                "720p" -> { vidWidth = 720; vidHeight = 1280; vidBitrate = 2000000 }
-                "1080p" -> { vidWidth = 1080; vidHeight = 1920; vidBitrate = 4000000 }
-                "1440p" -> { vidWidth = 1440; vidHeight = 2560; vidBitrate = 8000000 }
-                "2160p" -> { vidWidth = 2160; vidHeight = 3840; vidBitrate = 16000000 }
-            }
+            var vidBitrate = 4000000
             
             val fpsVal = settingsManager.videoFps.first()
             
@@ -2292,8 +2285,7 @@ class VideoGenerator {
             }
         }
         
-        val scale = videoWidth / 360f
-
+        
         // Draw Surah Name at top
         val tfArabic = getArabicTypeface(context, fontFamily)
         val tfSurah = getArabicTypeface(context, surahNameFontFamily)
@@ -2311,12 +2303,12 @@ class VideoGenerator {
             alpha = (surahNameOpacity * 255).toInt().coerceIn(0, 255)
             this.textAlign = Paint.Align.CENTER
             typeface = tfSurah
-            textSize = surahNameFontSize.toFloat() * scale
+            textSize = surahNameFontSize.toFloat()
             setShadowLayer(8f, 0f, 4f, Color.argb(200, 0, 0, 0))
         }
         // Apply Surah Name X/Y offsets, scaled
-        val snX = videoWidth / 2f + (surahNameX.toFloat() * scale)
-        val surahTopY = 40f + (surahNameY.toFloat() * scale)
+        val snX = videoWidth / 2f + (surahNameX.toFloat())
+        val surahTopY = 40f + (surahNameY.toFloat())
         val snY = surahTopY - surahPaint.ascent()
         if (!isPreviewMode) {
             canvas.drawText(surahName, snX, snY, surahPaint)
@@ -2360,7 +2352,7 @@ class VideoGenerator {
             color = finalTextColor
             this.textAlign = Paint.Align.LEFT
             typeface = tfArabicWeighted
-            this.textSize = textFontSize.toFloat() * scale
+            this.textSize = textFontSize.toFloat()
             setShadowLayer(8f, 0f, 4f, Color.argb(200, 0, 0, 0))
         }
         
@@ -2370,7 +2362,7 @@ class VideoGenerator {
             else -> Layout.Alignment.ALIGN_CENTER
         }
         
-        val horizontalPadding = (48 * scale).toInt()
+        val horizontalPadding = (48).toInt()
         val textWidth = videoWidth - horizontalPadding
         val sl = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             StaticLayout.Builder.obtain(text, 0, text.length, textPaint, textWidth)
@@ -2401,7 +2393,7 @@ class VideoGenerator {
             color = finalTransColor
             this.textAlign = Paint.Align.LEFT
             typeface = tfEnglishWeighted
-            this.textSize = translationFontSize.toFloat() * scale
+            this.textSize = translationFontSize.toFloat()
             setShadowLayer(8f, 0f, 4f, Color.argb(200, 0, 0, 0))
         }
         
@@ -2425,7 +2417,7 @@ class VideoGenerator {
             "Bottom" -> videoHeight.toFloat() - totalHeight - 100f
             else -> (videoHeight.toFloat() - totalHeight) / 2f + 150f
         }
-        val startY = baseStartY + ((arabicTextY.toFloat() - 90f) * scale)
+        val startY = baseStartY + ((arabicTextY.toFloat() - 90f))
         
         canvas.save()
         if (animScale != 1f || animTranslateY != 0f) {
@@ -2447,11 +2439,11 @@ class VideoGenerator {
                     style = Paint.Style.FILL
                 }
                 
-                val boxPadding = 30f * scale
+                val boxPadding = 30f
                 val boxWidth = videoWidth - (boxPadding * 2)
-                val boxHeight = totalHeight + (84f * scale)
+                val boxHeight = totalHeight + (84f)
                 val boxLeft = (videoWidth / 2f) - boxWidth / 2f
-                val boxTop = baseStartY - (42f * scale)
+                val boxTop = baseStartY - (42f)
                 val boxRight = boxLeft + boxWidth
                 val boxBottom = boxTop + boxHeight
                 
@@ -2462,15 +2454,15 @@ class VideoGenerator {
             
             // 5. Draw Primary Text
             canvas.save()
-            canvas.translate((horizontalPadding / 2f) + (arabicTextX.toFloat() * scale), startY)
+            canvas.translate((horizontalPadding / 2f) + (arabicTextX.toFloat()), startY)
             sl.draw(canvas)
             canvas.restore()
             
             // 6. Draw translation
             if (transSl != null) {
                 canvas.save()
-                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 115f) * scale)
-                canvas.translate((horizontalPadding / 2f) + (translationTextX.toFloat() * scale), transY)
+                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 115f))
+                canvas.translate((horizontalPadding / 2f) + (translationTextX.toFloat()), transY)
                 transSl.draw(canvas)
                 canvas.restore()
             }
@@ -2486,12 +2478,12 @@ class VideoGenerator {
                     val alphaVal = (iconOpacity * 255).toInt().coerceIn(0, 255)
                     color = Color.argb(alphaVal, 255, 255, 255)
                     typeface = Typeface.DEFAULT
-                    textSize = iconSize.toFloat() * scale
+                    textSize = iconSize.toFloat()
                     this.textAlign = Paint.Align.CENTER
                     setShadowLayer(6f, 0f, 3f, Color.argb(150, 0, 0, 0))
                 }
-                val heartY = videoHeight / 2f + ((iconY.toFloat() + 45f) * 2f * scale) - iconPaint.descent()
-                canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat() * 2f * scale), heartY, iconPaint)
+                val heartY = videoHeight / 2f + ((iconY.toFloat() + 45f) * 2f) - iconPaint.descent()
+                canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat() * 2f), heartY, iconPaint)
             }
         }
     }

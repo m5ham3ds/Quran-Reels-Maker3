@@ -457,8 +457,7 @@ fun VideoEditorScreen(
             ) {
                 val density = androidx.compose.ui.platform.LocalDensity.current.density
                 val actualWidthDp = minOf(maxWidth, maxHeight * (9f / 16f))
-                val viewWidthPx = actualWidthDp.value * density
-                
+                val viewWidthPx = actualWidthDp.value * androidx.compose.ui.platform.LocalDensity.current.density
                 val scalePx = viewWidthPx / 720f
                 val canvasScale = actualWidthDp.value / 720f
                 val currentDensity = androidx.compose.ui.platform.LocalDensity.current
@@ -527,7 +526,7 @@ fun VideoEditorScreen(
             // Surah Name Handle
             Box(
                 modifier = Modifier
-                    .offset { IntOffset((surahNameX * 2f * scalePx).roundToInt(), (surahNameY * 2f * scalePx).roundToInt()) }
+                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), (surahNameY * scalePx).roundToInt()) }
                     .align(Alignment.TopCenter)
                     .padding(top = 90.dp)
                     .pointerInput(Unit) {
@@ -540,8 +539,8 @@ fun VideoEditorScreen(
                             onDrag = { change, dragAmount ->
                                 change.consume()
                                 val dx = dragAmount.x
-                                surahNameX = (surahNameX + dx / (scalePx * 2f)).coerceIn(-300f, 300f)
-                                surahNameY = (surahNameY + dragAmount.y / (scalePx * 2f)).coerceIn(-800f, 800f)
+                                surahNameX = (surahNameX + dx / scalePx).coerceIn(-300f, 300f)
+                                surahNameY = (surahNameY + dragAmount.y / scalePx).coerceIn(-800f, 800f)
                             }
                         )
                     }
@@ -553,7 +552,7 @@ fun VideoEditorScreen(
                     text = currentSurah,
                     fontFamily = currentSurahFont,
                     color = sColor.copy(alpha = surahNameOpacity),
-                    fontSize = spFromCanvas(24f * 2f),
+                    fontSize = spFromCanvas(24f),
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -562,7 +561,7 @@ fun VideoEditorScreen(
             if (iconOpacity > 0f || selectedElement == "icon") {
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((iconX * 2f * scalePx).roundToInt(), ((iconY * 2f + 45f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 45f) * scalePx).roundToInt()) }
                         .align(Alignment.Center)
                         .pointerInput(Unit) {
                             detectDragGestures(
@@ -574,8 +573,8 @@ fun VideoEditorScreen(
                                 onDrag = { change, dragAmount ->
                                     change.consume()
                                     val dx = dragAmount.x
-                                    iconX = (iconX + dx / (scalePx * 2f)).coerceIn(-300f, 300f)
-                                    iconY = (iconY + dragAmount.y / (scalePx * 2f)).coerceIn(-800f, 800f)
+                                    iconX = (iconX + dx / scalePx).coerceIn(-300f, 300f)
+                                    iconY = (iconY + dragAmount.y / scalePx).coerceIn(-800f, 800f)
                                 }
                             )
                         }
@@ -583,14 +582,14 @@ fun VideoEditorScreen(
                         .border(if (selectedElement == "icon") 2.dp else 0.dp, if (selectedElement == "icon") LuxuryGold else Color.Transparent, RoundedCornerShape(4.dp))
                         .padding(8.dp)
                 ) {
-                    Text("♡", color = Color.White.copy(alpha = iconOpacity.coerceAtLeast(0.3f)), fontSize = spFromCanvas(iconSize.toFloat() * 2f))
+                    Text("♡", color = Color.White.copy(alpha = iconOpacity.coerceAtLeast(0.3f)), fontSize = spFromCanvas(iconSize.toFloat()))
                 }
             }
 
 
             // Grouped Text Container (Matches Generator and Live Preview logic)
             Column(
-                modifier = Modifier.width(dpFromCanvas(624f)).align(
+                modifier = Modifier.width(dpFromCanvas(720f - 96f)).align(
                     when (textPosition) {
                         "Top" -> Alignment.TopCenter
                         "Bottom" -> Alignment.BottomCenter
@@ -624,7 +623,7 @@ fun VideoEditorScreen(
                 // Arabic Text Handle
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((arabicTextX * 2f * scalePx).roundToInt(), ((arabicTextY * 2f - 90f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((arabicTextX * scalePx).roundToInt(), ((arabicTextY - 90f) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -635,8 +634,8 @@ fun VideoEditorScreen(
                                 onDrag = { change, dragAmount ->
                                     change.consume()
                                     val dx = dragAmount.x
-                                    arabicTextX = (arabicTextX + dx / (scalePx * 2f)).coerceIn(-300f, 300f)
-                                    arabicTextY = (arabicTextY + dragAmount.y / (scalePx * 2f)).coerceIn(-800f, 800f)
+                                    arabicTextX = (arabicTextX + dx / scalePx).coerceIn(-300f, 300f)
+                                    arabicTextY = (arabicTextY + dragAmount.y / scalePx).coerceIn(-800f, 800f)
                                 }
                             )
                         }
@@ -648,7 +647,7 @@ fun VideoEditorScreen(
                         text = currentArabic,
                         color = qColor.copy(alpha = textOpacity),
                         fontFamily = currentQuranFont,
-                        fontSize = spFromCanvas(fontSize.toFloat() * 2f),
+                        fontSize = spFromCanvas(fontSize.toFloat()),
                         fontWeight = FontWeight.Bold,
                         textAlign = alignEnum
                     )
@@ -658,7 +657,7 @@ fun VideoEditorScreen(
                 if (showTranslation) {
                     Box(
                         modifier = Modifier
-                            .offset { IntOffset((translationTextX * 2f * scalePx).roundToInt(), ((translationTextY * 2f - 115f) * scalePx).roundToInt()) }
+                            .offset { IntOffset((translationTextX * scalePx).roundToInt(), ((translationTextY - 115f) * scalePx).roundToInt()) }
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = {
@@ -669,8 +668,8 @@ fun VideoEditorScreen(
                                     onDrag = { change, dragAmount ->
                                         change.consume()
                                         val dx = dragAmount.x
-                                        translationTextX = (translationTextX + dx / (scalePx * 2f)).coerceIn(-300f, 300f)
-                                        translationTextY = (translationTextY + dragAmount.y / (scalePx * 2f)).coerceIn(-800f, 800f)
+                                        translationTextX = (translationTextX + dx / scalePx).coerceIn(-300f, 300f)
+                                        translationTextY = (translationTextY + dragAmount.y / scalePx).coerceIn(-800f, 800f)
                                     }
                                 )
                             }
@@ -682,7 +681,7 @@ fun VideoEditorScreen(
                             text = currentEnglish,
                             color = tColor.copy(alpha = translationOpacity),
                             fontFamily = currentTransFont,
-                            fontSize = spFromCanvas(translationFontSize.toFloat() * 2f),
+                            fontSize = spFromCanvas(translationFontSize.toFloat()),
                             fontWeight = FontWeight.Medium,
                             textAlign = alignEnum
                         )
@@ -1152,7 +1151,7 @@ fun VideoEditorScreen(
                             Slider(
                                 value = fontSize,
                                 onValueChange = { fontSize = it },
-                                valueRange = 20f..100f,
+                                valueRange = 20f..200f,
                                 modifier = Modifier.width(120.dp),
                                 colors = SliderDefaults.colors(thumbColor = LuxuryGold, activeTrackColor = LuxuryGold)
                             )
@@ -1179,7 +1178,7 @@ fun VideoEditorScreen(
                             Slider(
                                 value = translationFontSize,
                                 onValueChange = { translationFontSize = it },
-                                valueRange = 5f..60f,
+                                valueRange = 10f..150f,
                                 modifier = Modifier.width(120.dp),
                                 colors = SliderDefaults.colors(thumbColor = LuxuryGold, activeTrackColor = LuxuryGold)
                             )
@@ -1190,7 +1189,7 @@ fun VideoEditorScreen(
                             Slider(
                                 value = iconSize,
                                 onValueChange = { iconSize = it },
-                                valueRange = 10f..60f,
+                                valueRange = 10f..150f,
                                 modifier = Modifier.width(100.dp),
                                 colors = SliderDefaults.colors(thumbColor = LuxuryGold, activeTrackColor = LuxuryGold)
                             )

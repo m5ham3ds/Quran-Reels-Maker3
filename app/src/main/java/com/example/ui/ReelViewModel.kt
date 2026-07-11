@@ -280,11 +280,11 @@ class ReelViewModel(application: Application) : AndroidViewModel(application) {
                                     put(android.provider.MediaStore.MediaColumns.DISPLAY_NAME, "Quran_Reel_Publish_Details_${System.currentTimeMillis()}.txt")
                                     put(android.provider.MediaStore.MediaColumns.MIME_TYPE, "text/plain")
                                     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Download/Quran Reels/Details")
+                                        put(android.provider.MediaStore.MediaColumns.RELATIVE_PATH, "Movies/Quran Reels/Details")
                                     }
                                 }
                                 val collection = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
-                                    android.provider.MediaStore.Downloads.EXTERNAL_CONTENT_URI
+                                    android.provider.MediaStore.Files.getContentUri("external")
                                 } else {
                                     android.provider.MediaStore.Files.getContentUri("external")
                                 }

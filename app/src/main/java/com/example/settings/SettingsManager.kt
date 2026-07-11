@@ -20,7 +20,7 @@ class SettingsManager(private val context: Context) {
         // Font formatting preferences
         val FONT_FAMILY = stringPreferencesKey("font_family") // "Amiri", "Cairo", "Default", "Monospace"
         val FONT_WEIGHT = stringPreferencesKey("font_weight") // "Bold", "Regular", "Light"
-        val FONT_SIZE = intPreferencesKey("font_size") // in px, e.g., 50
+        val FONT_SIZE = intPreferencesKey("font_size") // default changed to 50
         val TEXT_COLOR = stringPreferencesKey("text_color") // hex color, e.g., "#FFFFFF"
         val TEXT_OPACITY = floatPreferencesKey("text_opacity") // 0.0f - 1.0f
         
