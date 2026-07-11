@@ -1350,6 +1350,7 @@ fun FontFormattingScreen(settingsManager: SettingsManager, isArabic: Boolean) {
     val textPosition by settingsManager.textPosition.collectAsState(initial = "Center")
     val textAlign by settingsManager.textAlign.collectAsState(initial = "Center")
     val textAnimation by settingsManager.textAnimation.collectAsState(initial = "Fade")
+    val textAnimationEnabled by settingsManager.textAnimationEnabled.collectAsState(initial = true)
     val bgTransitionEnabled by settingsManager.bgTransitionEnabled.collectAsState(initial = false)
     val bgTransitionType by settingsManager.bgTransitionType.collectAsState(initial = "dissolve")
     
@@ -1965,18 +1966,35 @@ fun FontFormattingScreen(settingsManager: SettingsManager, isArabic: Boolean) {
                         }
                     }
 
-                    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(top = 10.dp)) {
-                        Icon(Icons.Default.PlayArrow, contentDescription = null, tint = LuxuryGold, modifier = Modifier.size(22.dp))
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(if (isArabic) "حركة دخول الجمل" else "Text Entrance Animation", color = TextSoftColor, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        modifier = Modifier.fillMaxWidth().padding(top = 10.dp)
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = null, tint = LuxuryGold, modifier = Modifier.size(22.dp))
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(if (isArabic) "حركة دخول الجمل" else "Text Entrance Animation", color = TextSoftColor, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                        }
+                        Switch(
+                            checked = textAnimationEnabled,
+                            onCheckedChange = { scope.launch { settingsManager.setTextAnimationEnabled(it) } },
+                            colors = SwitchDefaults.colors(
+                                checkedThumbColor = ScreenBg,
+                                checkedTrackColor = LuxuryGold,
+                                uncheckedThumbColor = TextMutedColor,
+                                uncheckedTrackColor = BorderColor
+                            )
+                        )
                     }
 
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        val animations = listOf("Fade" to (if(isArabic) "تلاشي" else "Fade"), "SlideUp" to (if(isArabic) "انزلاق" else "Slide Up"), "Scale" to (if(isArabic) "تكبير" else "Scale"), "None" to (if(isArabic) "بدون" else "None"))
-                        animations.forEach { (anim, label) ->
+                    if (textAnimationEnabled) {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            val animations = listOf("Fade" to (if(isArabic) "تلاشي" else "Fade"), "SlideUp" to (if(isArabic) "انزلاق لأعلى" else "Slide Up"), "SlideRight" to (if(isArabic) "انزلاق لليمين" else "Slide Right"), "Scale" to (if(isArabic) "تكبير" else "Scale"))
+                            animations.forEach { (anim, label) ->
                             val isSelected = textAnimation == anim
                             Card(
                                 onClick = { scope.launch { settingsManager.setTextAnimation(anim) } },
@@ -1998,6 +2016,7 @@ fun FontFormattingScreen(settingsManager: SettingsManager, isArabic: Boolean) {
                                 }
                             }
                         }
+                    }
                     }
 
                     // Background Transition
@@ -2661,7 +2680,7 @@ fun LivePreviewContainer(
                                 "Right" -> TextAlign.Right
                                 else -> TextAlign.Center
                             },
-                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale).dp, y = ((arabicTextY - 90f) * scale).dp)
+                            modifier = Modifier.fillMaxWidth().offset(x = (arabicTextX * scale).dp, y = ((arabicTextY - 160f) * scale).dp)
                         )
                     }
 
@@ -2693,7 +2712,7 @@ fun LivePreviewContainer(
                                     "Right" -> TextAlign.Right
                                     else -> TextAlign.Center
                                 },
-                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale).dp, y = ((translationTextY - 115f) * scale).dp)
+                                modifier = Modifier.fillMaxWidth().offset(x = (translationTextX * scale).dp, y = ((translationTextY - 225f) * scale).dp)
                             )
                         }
                     }
@@ -2735,7 +2754,7 @@ fun LivePreviewContainer(
             modifier = Modifier
                 .align(Alignment.Center)
                 .size((iconSize * scale).dp)
-                .offset(x = (iconX * scale).dp, y = ((iconY + 45f) * scale).dp)
+                .offset(x = (iconX * scale).dp, y = ((iconY + 95f) * scale).dp)
         )
 
 

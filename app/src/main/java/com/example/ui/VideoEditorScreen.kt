@@ -102,6 +102,8 @@ fun VideoEditorScreen(
     var videoQuality by remember { mutableStateOf("Ultra") }
 
     val showTranslation by settingsManager.showTranslation.collectAsState(initial = true)
+    val bgTransitionEnabled by settingsManager.bgTransitionEnabled.collectAsState(initial = false)
+    val bgTransitionType by settingsManager.bgTransitionType.collectAsState(initial = "dissolve")
     val textPosition by settingsManager.textPosition.collectAsState(initial = "Center")
 
     var arabicTextX by remember { mutableFloatStateOf(0f) }
@@ -499,6 +501,50 @@ fun VideoEditorScreen(
                     )
                 }
 
+                // Background Transition Overlay for Live Preview
+                if (bgTransitionEnabled && timelineChunks.isNotEmpty()) {
+                    val activeChunkIndex = timelineChunks.indexOfFirst { currentTime >= it.startTimeMs && currentTime <= it.endTimeMs }
+                    if (activeChunkIndex > 0) {
+                        val activeChunk = timelineChunks[activeChunkIndex]
+                        val prevChunk = timelineChunks[activeChunkIndex - 1]
+                        if (activeChunk.bgIndex != prevChunk.bgIndex) {
+                            val chunkTimeMs = currentTime - activeChunk.startTimeMs
+                            if (chunkTimeMs < 500L) {
+                                val progress = chunkTimeMs.toFloat() / 500f
+                                when (bgTransitionType.lowercase()) {
+                                    "black" -> {
+                                        val alpha = if (progress < 0.5f) {
+                                            (progress * 2f).coerceIn(0f, 1f)
+                                        } else {
+                                            (1f - (progress - 0.5f) * 2f).coerceIn(0f, 1f)
+                                        }
+                                        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = alpha)))
+                                    }
+                                    "blink" -> {
+                                        if (progress < 0.15f) {
+                                            Box(modifier = Modifier.fillMaxSize().background(Color.White))
+                                        }
+                                    }
+                                    "dissolve" -> {
+                                        // Approximate dissolve with a dip to black
+                                        val alpha = if (progress < 0.5f) {
+                                            (progress * 2f).coerceIn(0f, 1f) * 0.7f
+                                        } else {
+                                            (1f - (progress - 0.5f) * 2f).coerceIn(0f, 1f) * 0.7f
+                                        }
+                                        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = alpha)))
+                                    }
+                                    "vertical" -> {
+                                        // A simple slide down of a black overlay to approximate vertical transition
+                                        val alpha = 1f - progress
+                                        Box(modifier = Modifier.fillMaxSize().background(Color.Black.copy(alpha = alpha * 0.5f)))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 fun resolveFontFamily(fontName: String, ctx: android.content.Context): androidx.compose.ui.text.font.FontFamily {
                     if (fontName == "Default") return androidx.compose.ui.text.font.FontFamily.Default
                     if (fontName.startsWith("/")) {
@@ -538,7 +584,7 @@ fun VideoEditorScreen(
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 180f) * scalePx).roundToInt()) }
+                    .offset { IntOffset((surahNameX * scalePx).roundToInt(), ((surahNameY + 110f) * scalePx).roundToInt()) }
                     .pointerInput(Unit) {
                         detectDragGestures(
                             onDragStart = {
@@ -572,7 +618,7 @@ fun VideoEditorScreen(
                 Box(
                     modifier = Modifier
                         .align(Alignment.Center)
-                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 45f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((iconX * scalePx).roundToInt(), ((iconY + 95f) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -634,7 +680,7 @@ fun VideoEditorScreen(
                 // Arabic Text Handle
                 Box(
                     modifier = Modifier
-                        .offset { IntOffset((arabicTextX * scalePx).roundToInt(), ((arabicTextY - 90f) * scalePx).roundToInt()) }
+                        .offset { IntOffset((arabicTextX * scalePx).roundToInt(), ((arabicTextY - 160f) * scalePx).roundToInt()) }
                         .pointerInput(Unit) {
                             detectDragGestures(
                                 onDragStart = {
@@ -668,7 +714,7 @@ fun VideoEditorScreen(
                 if (showTranslation) {
                     Box(
                         modifier = Modifier
-                            .offset { IntOffset((translationTextX * scalePx).roundToInt(), ((translationTextY - 115f) * scalePx).roundToInt()) }
+                            .offset { IntOffset((translationTextX * scalePx).roundToInt(), ((translationTextY - 225f) * scalePx).roundToInt()) }
                             .pointerInput(Unit) {
                                 detectDragGestures(
                                     onDragStart = {

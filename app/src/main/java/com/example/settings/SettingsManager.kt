@@ -31,7 +31,8 @@ class SettingsManager(private val context: Context) {
         
         val TEXT_POSITION = stringPreferencesKey("text_position") // "Top", "Center", "Bottom"
         val TEXT_ALIGN = stringPreferencesKey("text_align") // "Center", "Left", "Right"
-        val TEXT_ANIMATION = stringPreferencesKey("text_animation") // "Fade", "SlideUp", "Scale", "None"
+        val TEXT_ANIMATION = stringPreferencesKey("text_animation")
+        val TEXT_ANIMATION_ENABLED = booleanPreferencesKey("text_animation_enabled") // "Fade", "SlideUp", "Scale", "None"
         val BACKGROUND_TRANSITION_ENABLED = booleanPreferencesKey("bg_transition_enabled")
         val BACKGROUND_TRANSITION_TYPE = stringPreferencesKey("bg_transition_type") // "black", "dissolve", "blink", "vertical"
 
@@ -154,6 +155,7 @@ class SettingsManager(private val context: Context) {
     val textPosition: Flow<String> = context.dataStore.data.map { it[TEXT_POSITION] ?: "Center" }
     val textAlign: Flow<String> = context.dataStore.data.map { it[TEXT_ALIGN] ?: "Center" }
     val textAnimation: Flow<String> = context.dataStore.data.map { it[TEXT_ANIMATION] ?: "Scale" }
+    val textAnimationEnabled: Flow<Boolean> = context.dataStore.data.map { it[TEXT_ANIMATION_ENABLED] ?: true }
     val bgTransitionEnabled: Flow<Boolean> = context.dataStore.data.map { it[BACKGROUND_TRANSITION_ENABLED] ?: false }
     val bgTransitionType: Flow<String> = context.dataStore.data.map { it[BACKGROUND_TRANSITION_TYPE] ?: "dissolve" }
     
@@ -175,7 +177,7 @@ class SettingsManager(private val context: Context) {
     val surahNameX: Flow<Int> = context.dataStore.data.map { it[SURAH_NAME_X] ?: 0 }
     val surahNameY: Flow<Int> = context.dataStore.data.map { it[SURAH_NAME_Y] ?: 0 }
     
-    val iconSize: Flow<Int> = context.dataStore.data.map { it[ICON_SIZE] ?: 20 }
+    val iconSize: Flow<Int> = context.dataStore.data.map { it[ICON_SIZE] ?: 40 }
     val iconOpacity: Flow<Float> = context.dataStore.data.map { it[ICON_OPACITY] ?: 0.8f }
     val iconX: Flow<Int> = context.dataStore.data.map { it[ICON_X] ?: 0 }
     val iconY: Flow<Int> = context.dataStore.data.map { it[ICON_Y] ?: 0 }
@@ -348,6 +350,10 @@ class SettingsManager(private val context: Context) {
     
     suspend fun setTextAnimation(value: String) {
         context.dataStore.edit { it[TEXT_ANIMATION] = value }
+    }
+    
+    suspend fun setTextAnimationEnabled(enabled: Boolean) {
+        context.dataStore.edit { it[TEXT_ANIMATION_ENABLED] = enabled }
     }
 
     suspend fun setBgTransitionEnabled(value: Boolean) {

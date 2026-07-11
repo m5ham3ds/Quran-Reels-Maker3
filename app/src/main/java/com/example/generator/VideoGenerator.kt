@@ -259,6 +259,7 @@ class VideoGenerator {
             val textPosition = settingsManager.textPosition.first()
             val textAlign = settingsManager.textAlign.first()
             val textAnimationType = settingsManager.textAnimation.first()
+            val textAnimationEnabled = settingsManager.textAnimationEnabled.first()
             
             val translationFontSize = translationFontSizeOverride?.toInt() ?: settingsManager.translationFontSize.first()
             val translationColorStr = settingsManager.translationColor.first()
@@ -1277,6 +1278,7 @@ class VideoGenerator {
                         textBgRadius = textBgRadius,
                         textPosition = textPosition,
                         textAlign = textAlign,
+                        textAnimationEnabled = textAnimationEnabled,
                         textAnimationType = textAnimationType,
                         translationFontSize = translationFontSize,
                         translationColorStr = translationColorStr,
@@ -2146,6 +2148,7 @@ class VideoGenerator {
         textBgRadius: Int,
         textPosition: String,
         textAlign: String,
+        textAnimationEnabled: Boolean,
         textAnimationType: String,
         translationFontSize: Int,
         translationColorStr: String,
@@ -2308,7 +2311,7 @@ class VideoGenerator {
         }
         // Apply Surah Name X/Y offsets, scaled
         val snX = videoWidth / 2f + (surahNameX.toFloat())
-        val surahTopY = 180f + (surahNameY.toFloat())
+        val surahTopY = 110f + (surahNameY.toFloat())
         val snY = surahTopY - surahPaint.ascent()
         if (!isPreviewMode) {
             canvas.drawText(surahName, snX, snY, surahPaint)
@@ -2319,8 +2322,9 @@ class VideoGenerator {
         var animAlpha = 1f
         var animScale = 1f
         var animTranslateY = 0f
+        var animTranslateX = 0f
         
-        if (chunkTimeMs < animDuration && chunkTimeMs >= 0L) {
+        if (textAnimationEnabled && chunkTimeMs < animDuration && chunkTimeMs >= 0L) {
             val progress = chunkTimeMs.toFloat() / animDuration.toFloat()
             val easeOut = 1f - Math.pow((1f - progress).toDouble(), 3.0).toFloat()
             when (textAnimationType) {
@@ -2330,6 +2334,10 @@ class VideoGenerator {
                 "SlideUp" -> {
                     animAlpha = easeOut
                     animTranslateY = 40f * (1f - easeOut)
+                }
+                "SlideRight" -> {
+                    animAlpha = easeOut
+                    animTranslateX = -40f * (1f - easeOut)
                 }
                 "Scale" -> {
                     animAlpha = easeOut
@@ -2417,13 +2425,13 @@ class VideoGenerator {
             "Bottom" -> videoHeight.toFloat() - totalHeight - 100f
             else -> (videoHeight.toFloat() - totalHeight) / 2f + 150f
         }
-        val startY = baseStartY + ((arabicTextY.toFloat() - 90f))
+        val startY = baseStartY + ((arabicTextY.toFloat() - 160f))
         
         canvas.save()
-        if (animScale != 1f || animTranslateY != 0f) {
+        if (animScale != 1f || animTranslateY != 0f || animTranslateX != 0f) {
             val pivotX = videoWidth / 2f
             val pivotY = baseStartY + (totalHeight / 2f)
-            canvas.translate(0f, animTranslateY)
+            canvas.translate(animTranslateX, animTranslateY)
             canvas.scale(animScale, animScale, pivotX, pivotY)
         }
         
@@ -2461,7 +2469,7 @@ class VideoGenerator {
             // 6. Draw translation
             if (transSl != null) {
                 canvas.save()
-                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 115f))
+                val transY = baseStartY + sl.height + 32f + ((translationTextY.toFloat() - 225f))
                 canvas.translate((horizontalPadding / 2f) + (translationTextX.toFloat()), transY)
                 transSl.draw(canvas)
                 canvas.restore()
@@ -2482,7 +2490,7 @@ class VideoGenerator {
                     this.textAlign = Paint.Align.CENTER
                     setShadowLayer(6f, 0f, 3f, Color.argb(150, 0, 0, 0))
                 }
-                val heartY = videoHeight / 2f + (iconY.toFloat() + 45f) - iconPaint.descent()
+                val heartY = videoHeight / 2f + (iconY.toFloat() + 95f) - iconPaint.descent()
                 canvas.drawText("♡", videoWidth / 2f + (iconX.toFloat()), heartY, iconPaint)
             }
         }
