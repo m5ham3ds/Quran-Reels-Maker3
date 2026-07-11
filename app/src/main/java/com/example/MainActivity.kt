@@ -2571,9 +2571,13 @@ fun LivePreviewContainer(
         }
     }
 
+    Box(
+        modifier = Modifier.fillMaxWidth().height(520.dp),
+        contentAlignment = Alignment.Center
+    ) {
     BoxWithConstraints(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxHeight()
             .aspectRatio(9f / 16f)
             .clip(RoundedCornerShape(24.dp))
             .background(
@@ -2730,6 +2734,42 @@ fun LivePreviewContainer(
         )
 
 
+        
+        // Realistic Reel Social Overlay
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(18.dp),
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 12.dp, bottom = 40.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Filled.Favorite, contentDescription = null, tint = Color(0xFFE91E63), modifier = Modifier.size(26.dp))
+                }
+                Text("1.2K", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+            
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                IconButton(onClick = {}) {
+                    Icon(Icons.Filled.Home, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+                }
+                Text("48", color = Color.White, fontSize = 11.sp, fontWeight = FontWeight.Bold)
+            }
+            
+            IconButton(onClick = {}) {
+                Icon(Icons.Filled.Send, contentDescription = null, tint = Color.White, modifier = Modifier.size(24.dp))
+            }
+            
+            // Spinning disk silhouette
+            Box(
+                modifier = Modifier
+                    .size(28.dp)
+                    .border(2.dp, Color.White.copy(alpha = 0.5f), CircleShape)
+                    .background(Color.Black, CircleShape)
+            )
+        }
+
         // Live Preview Eyes banner (floating footer indicator)
         Row(
             modifier = Modifier
@@ -2756,6 +2796,7 @@ fun LivePreviewContainer(
             )
         }
     }
+    } // Close Box(height=520.dp)
 }
 
 @Composable

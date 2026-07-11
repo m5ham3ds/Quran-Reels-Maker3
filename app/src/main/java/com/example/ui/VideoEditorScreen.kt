@@ -454,13 +454,20 @@ fun VideoEditorScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     BoxWithConstraints(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .aspectRatio(9f / 16f)
-                    .background(Color.Black)
-            ) {
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(Color.Black),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        val actualWidthDp = minOf(maxWidth, maxHeight * (9f / 16f))
+                        val actualHeightDp = actualWidthDp * (16f / 9f)
+                        
+                        Box(
+                            modifier = Modifier
+                                .size(actualWidthDp, actualHeightDp)
+                                .background(Color.Black)
+                        ) {
                 val density = androidx.compose.ui.platform.LocalDensity.current.density
-                val actualWidthDp = minOf(maxWidth, maxHeight * (9f / 16f))
                 val viewWidthPx = actualWidthDp.value * androidx.compose.ui.platform.LocalDensity.current.density
                 val scalePx = viewWidthPx / 720f
                 val canvasScale = actualWidthDp.value / 720f
@@ -712,7 +719,7 @@ fun VideoEditorScreen(
                     }
                 }
             }
-            } // Close BoxWithConstraints
+            } } // Close Box and BoxWithConstraints
             } // Close inner Box
             } // Close LTR Provider
         } // Close outer Box
